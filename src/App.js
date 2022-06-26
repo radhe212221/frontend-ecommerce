@@ -14,40 +14,39 @@ import ErrorPage from "./comp/ErrorPage";
 import { AppContext } from "./index";
 export default function App() {
   const { state, setState } = useContext(AppContext);
-  const boot = () => {
-    axios
+  const boot = async () => {
+    setState({ ...state, loading: true });
+    let products = await axios
       .get("http://localhost:5000/products")
-      .then((res) => res.data)
-      .then((d) => {
-        // console.log(d.data)
-        setState({ ...state, products: d });
-      });
-
-    axios
+      .then((res) => res.data.data)
+      .catch((e) => []);
+    let tags = await axios
       .get("http://localhost:5000/tags")
-      .then((res) => res.data)
-      .then((d) => {
-        // console.log(d.data)
-        setState({ ...state, tags: d });
-      });
-
-    axios
+      .then((res) => res.data.data)
+      .catch((e) => []);
+    let cart = await axios
       .get("http://localhost:5000/cart")
-      .then((res) => res.data)
-      .then((d) => {
-        // console.log(d.data)
-        setState({ ...state, cart: d });
-      });
-    axios
+      .then((res) => res.data.data)
+      .catch((e) => []);
+    let orders = await axios
       .get("http://localhost:5000/orders")
-      .then((res) => res.data)
-      .then((d) => {
-        // console.log(d.data)
-        setState({ ...state, orders: d });
-      });
+      .then((res) => res.data.data)
+      .catch((e) => []);
+
+    setState({
+      ...state,
+      loading: false,
+      products,
+      tags,
+      cart,
+      orders,
+    });
   };
 
-  useEffect(boot, []);
+  useEffect(() => {
+    return () => boot();
+  }, []);
+  if (state?.loading) return <h1>loading...</h1>;
   return (
     <BrowserRouter>
       <Header />
