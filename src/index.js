@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { createRoot } from "react-dom/client";
+import App from './App'
 
 export const AppContext = React.createContext();
-
 const Root = () => {
   const [state, setState] = useState({
     users: [],
